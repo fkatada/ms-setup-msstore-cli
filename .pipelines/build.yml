@@ -117,3 +117,32 @@ extends:
             displayName: Run GHA Script and check version
             env:
               RUNNER_TEMP: $(Agent.TempDirectory)
+    - ${{ if eq(parameters['DoEsrp'], 'true') }}:
+      - stage: PublishToMarketplace
+        dependsOn: BuildAndTest
+        trigger: manual
+        jobs:
+        - job: PublishToMarketplaceJob
+          displayName: Publish to Marketplace
+          steps:
+            - download: current
+              displayName: Download Signed Artifact
+              artifact: vsix
+            - task: AzureCLI@2
+              displayName: 'Get AzDO User ID'
+              inputs:
+                azureSubscription: $(SigningServiceName)
+                scriptType: pscore
+                scriptLocation: inlineScript
+                inlineScript: |
+                  az rest -u https://app.vssps.visualstudio.com/_apis/profile/profiles/me --resource 499b84ac-1321-427f-aa17-267ca6975798
+            - task: 1ES.PublishAzureDevOpsExtension@1
+              displayName: 'Publish the production extension to the Marketplace'
+              inputs:
+                connectTo: 'AzureRM'
+                connectedServiceNameAzureRM: $(SigningServiceName)
+                fileType: 'vsix'
+                vsixFile: '$(Pipeline.Workspace)/vsix/ms-aps-msstorecli.microsoft-store-developer-cli-task-*.vsix'
+                targetPath: '$(Pipeline.Workspace)/vsix'
+                validateExtension: false
+                useV5: true
