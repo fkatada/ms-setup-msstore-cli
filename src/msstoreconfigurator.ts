@@ -1,6 +1,6 @@
 import * as path from 'path'
 import * as os from 'os'
-import {v4 as uuidv4} from 'uuid'
+import * as crypto from 'crypto'
 import * as fs from 'fs'
 
 export function getConfig(version: string): MSStoreCLIConfigurator {
@@ -58,7 +58,7 @@ export class MSStoreCLIConfigurator {
     pipeline.debug(`Downloading tool from ${downloadURL}`)
     let downloadPath: string | null = null
     let archivePath: string | null = null
-    const randomDir: string = uuidv4()
+    const randomDir: string = crypto.randomUUID()
     const tempDir = path.join(os.tmpdir(), 'tmp', 'runner', randomDir)
     pipeline.debug(`Creating tempdir ${tempDir}`)
     await pipeline.mkdirP(tempDir)

@@ -47,4 +47,7 @@ export async function run(): Promise<void> {
   }
 }
 
-run()
+// Only run when this file is executed directly, not when imported
+if (require.main === module) {
+  run()
+}

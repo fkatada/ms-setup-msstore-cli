@@ -3438,90 +3438,6 @@ function coerce (version) {
 
 /***/ }),
 
-/***/ 1569:
-/***/ ((module) => {
-
-/**
- * Convert array of 16 byte values to UUID string format of the form:
- * XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX
- */
-var byteToHex = [];
-for (var i = 0; i < 256; ++i) {
-  byteToHex[i] = (i + 0x100).toString(16).substr(1);
-}
-
-function bytesToUuid(buf, offset) {
-  var i = offset || 0;
-  var bth = byteToHex;
-  // join used to fix memory issue caused by concatenation: https://bugs.chromium.org/p/v8/issues/detail?id=3175#c4
-  return ([
-    bth[buf[i++]], bth[buf[i++]],
-    bth[buf[i++]], bth[buf[i++]], '-',
-    bth[buf[i++]], bth[buf[i++]], '-',
-    bth[buf[i++]], bth[buf[i++]], '-',
-    bth[buf[i++]], bth[buf[i++]], '-',
-    bth[buf[i++]], bth[buf[i++]],
-    bth[buf[i++]], bth[buf[i++]],
-    bth[buf[i++]], bth[buf[i++]]
-  ]).join('');
-}
-
-module.exports = bytesToUuid;
-
-
-/***/ }),
-
-/***/ 377:
-/***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
-
-// Unique ID creation requires a high quality random # generator.  In node.js
-// this is pretty straight-forward - we use the crypto API.
-
-var crypto = __nccwpck_require__(6982);
-
-module.exports = function nodeRNG() {
-  return crypto.randomBytes(16);
-};
-
-
-/***/ }),
-
-/***/ 6652:
-/***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
-
-var rng = __nccwpck_require__(377);
-var bytesToUuid = __nccwpck_require__(1569);
-
-function v4(options, buf, offset) {
-  var i = buf && offset || 0;
-
-  if (typeof(options) == 'string') {
-    buf = options === 'binary' ? new Array(16) : null;
-    options = null;
-  }
-  options = options || {};
-
-  var rnds = options.random || (options.rng || rng)();
-
-  // Per 4.4, set bits for version and `clock_seq_hi_and_reserved`
-  rnds[6] = (rnds[6] & 0x0f) | 0x40;
-  rnds[8] = (rnds[8] & 0x3f) | 0x80;
-
-  // Copy bytes to buffer, if provided
-  if (buf) {
-    for (var ii = 0; ii < 16; ++ii) {
-      buf[i + ii] = rnds[ii];
-    }
-  }
-
-  return buf || bytesToUuid(rnds);
-}
-
-module.exports = v4;
-
-
-/***/ }),
-
 /***/ 358:
 /***/ (function(__unused_webpack_module, exports, __nccwpck_require__) {
 
@@ -7350,7 +7266,7 @@ exports.Vault = void 0;
 var fs = __nccwpck_require__(9896);
 var path = __nccwpck_require__(6928);
 var crypto = __nccwpck_require__(6982);
-var uuidV4 = __nccwpck_require__(6652);
+var uuidV4 = __nccwpck_require__(9021);
 var algorithm = "aes-256-ctr";
 var encryptEncoding = 'hex';
 var unencryptedEncoding = 'utf8';
@@ -11901,7 +11817,7 @@ exports.Vault = void 0;
 var fs = __nccwpck_require__(9896);
 var path = __nccwpck_require__(6928);
 var crypto = __nccwpck_require__(6982);
-var uuidV4 = __nccwpck_require__(3193);
+var uuidV4 = __nccwpck_require__(9021);
 var algorithm = "aes-256-ctr";
 var encryptEncoding = 'hex';
 var unencryptedEncoding = 'utf8';
@@ -14461,90 +14377,6 @@ function coerce (version) {
 
 /***/ }),
 
-/***/ 5670:
-/***/ ((module) => {
-
-/**
- * Convert array of 16 byte values to UUID string format of the form:
- * XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX
- */
-var byteToHex = [];
-for (var i = 0; i < 256; ++i) {
-  byteToHex[i] = (i + 0x100).toString(16).substr(1);
-}
-
-function bytesToUuid(buf, offset) {
-  var i = offset || 0;
-  var bth = byteToHex;
-  // join used to fix memory issue caused by concatenation: https://bugs.chromium.org/p/v8/issues/detail?id=3175#c4
-  return ([
-    bth[buf[i++]], bth[buf[i++]],
-    bth[buf[i++]], bth[buf[i++]], '-',
-    bth[buf[i++]], bth[buf[i++]], '-',
-    bth[buf[i++]], bth[buf[i++]], '-',
-    bth[buf[i++]], bth[buf[i++]], '-',
-    bth[buf[i++]], bth[buf[i++]],
-    bth[buf[i++]], bth[buf[i++]],
-    bth[buf[i++]], bth[buf[i++]]
-  ]).join('');
-}
-
-module.exports = bytesToUuid;
-
-
-/***/ }),
-
-/***/ 66:
-/***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
-
-// Unique ID creation requires a high quality random # generator.  In node.js
-// this is pretty straight-forward - we use the crypto API.
-
-var crypto = __nccwpck_require__(6982);
-
-module.exports = function nodeRNG() {
-  return crypto.randomBytes(16);
-};
-
-
-/***/ }),
-
-/***/ 3193:
-/***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
-
-var rng = __nccwpck_require__(66);
-var bytesToUuid = __nccwpck_require__(5670);
-
-function v4(options, buf, offset) {
-  var i = buf && offset || 0;
-
-  if (typeof(options) == 'string') {
-    buf = options === 'binary' ? new Array(16) : null;
-    options = null;
-  }
-  options = options || {};
-
-  var rnds = options.random || (options.rng || rng)();
-
-  // Per 4.4, set bits for version and `clock_seq_hi_and_reserved`
-  rnds[6] = (rnds[6] & 0x0f) | 0x40;
-  rnds[8] = (rnds[8] & 0x3f) | 0x80;
-
-  // Copy bytes to buffer, if provided
-  if (buf) {
-    for (var ii = 0; ii < 16; ++ii) {
-      buf[i + ii] = rnds[ii];
-    }
-  }
-
-  return buf || bytesToUuid(rnds);
-}
-
-module.exports = v4;
-
-
-/***/ }),
-
 /***/ 8344:
 /***/ (function(__unused_webpack_module, exports, __nccwpck_require__) {
 
@@ -14569,7 +14401,7 @@ const fs = __nccwpck_require__(9896);
 const semver = __nccwpck_require__(2170);
 const tl = __nccwpck_require__(4330);
 const cmp = __nccwpck_require__(3898);
-const uuidV4 = __nccwpck_require__(3193);
+const uuidV4 = __nccwpck_require__(9021);
 let pkg = __nccwpck_require__(614);
 let userAgent = 'vsts-task-installer/' + pkg.version;
 let requestOptions = {
@@ -28378,6 +28210,90 @@ exports.obtainContentCharset = obtainContentCharset;
 
 /***/ }),
 
+/***/ 8682:
+/***/ ((module) => {
+
+/**
+ * Convert array of 16 byte values to UUID string format of the form:
+ * XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX
+ */
+var byteToHex = [];
+for (var i = 0; i < 256; ++i) {
+  byteToHex[i] = (i + 0x100).toString(16).substr(1);
+}
+
+function bytesToUuid(buf, offset) {
+  var i = offset || 0;
+  var bth = byteToHex;
+  // join used to fix memory issue caused by concatenation: https://bugs.chromium.org/p/v8/issues/detail?id=3175#c4
+  return ([
+    bth[buf[i++]], bth[buf[i++]],
+    bth[buf[i++]], bth[buf[i++]], '-',
+    bth[buf[i++]], bth[buf[i++]], '-',
+    bth[buf[i++]], bth[buf[i++]], '-',
+    bth[buf[i++]], bth[buf[i++]], '-',
+    bth[buf[i++]], bth[buf[i++]],
+    bth[buf[i++]], bth[buf[i++]],
+    bth[buf[i++]], bth[buf[i++]]
+  ]).join('');
+}
+
+module.exports = bytesToUuid;
+
+
+/***/ }),
+
+/***/ 1694:
+/***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
+
+// Unique ID creation requires a high quality random # generator.  In node.js
+// this is pretty straight-forward - we use the crypto API.
+
+var crypto = __nccwpck_require__(6982);
+
+module.exports = function nodeRNG() {
+  return crypto.randomBytes(16);
+};
+
+
+/***/ }),
+
+/***/ 9021:
+/***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
+
+var rng = __nccwpck_require__(1694);
+var bytesToUuid = __nccwpck_require__(8682);
+
+function v4(options, buf, offset) {
+  var i = buf && offset || 0;
+
+  if (typeof(options) == 'string') {
+    buf = options === 'binary' ? new Array(16) : null;
+    options = null;
+  }
+  options = options || {};
+
+  var rnds = options.random || (options.rng || rng)();
+
+  // Per 4.4, set bits for version and `clock_seq_hi_and_reserved`
+  rnds[6] = (rnds[6] & 0x0f) | 0x40;
+  rnds[8] = (rnds[8] & 0x3f) | 0x80;
+
+  // Copy bytes to buffer, if provided
+  if (buf) {
+    for (var ii = 0; ii < 16; ++ii) {
+      buf[i + ii] = rnds[ii];
+    }
+  }
+
+  return buf || bytesToUuid(rnds);
+}
+
+module.exports = v4;
+
+
+/***/ }),
+
 /***/ 8264:
 /***/ ((module) => {
 
@@ -28584,7 +28500,7 @@ exports.getConfig = getConfig;
 exports.binPath = binPath;
 const path = __importStar(__nccwpck_require__(6928));
 const os = __importStar(__nccwpck_require__(857));
-const uuid_1 = __nccwpck_require__(1914);
+const crypto = __importStar(__nccwpck_require__(6982));
 const fs = __importStar(__nccwpck_require__(9896));
 function getConfig(version) {
     return new MSStoreCLIConfigurator(version || 'latest');
@@ -28624,7 +28540,7 @@ class MSStoreCLIConfigurator {
             pipeline.debug(`Downloading tool from ${downloadURL}`);
             let downloadPath = null;
             let archivePath = null;
-            const randomDir = (0, uuid_1.v4)();
+            const randomDir = crypto.randomUUID();
             const tempDir = path.join(os.tmpdir(), 'tmp', 'runner', randomDir);
             pipeline.debug(`Creating tempdir ${tempDir}`);
             yield pipeline.mkdirP(tempDir);
@@ -28808,628 +28724,11 @@ module.exports = require("zlib");
 
 /***/ }),
 
-/***/ 1914:
-/***/ ((__unused_webpack_module, exports, __nccwpck_require__) => {
-
-"use strict";
-
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.version = exports.validate = exports.v7 = exports.v6ToV1 = exports.v6 = exports.v5 = exports.v4 = exports.v3 = exports.v1ToV6 = exports.v1 = exports.stringify = exports.parse = exports.NIL = exports.MAX = void 0;
-var max_js_1 = __nccwpck_require__(1576);
-Object.defineProperty(exports, "MAX", ({ enumerable: true, get: function () { return max_js_1.default; } }));
-var nil_js_1 = __nccwpck_require__(805);
-Object.defineProperty(exports, "NIL", ({ enumerable: true, get: function () { return nil_js_1.default; } }));
-var parse_js_1 = __nccwpck_require__(2713);
-Object.defineProperty(exports, "parse", ({ enumerable: true, get: function () { return parse_js_1.default; } }));
-var stringify_js_1 = __nccwpck_require__(9687);
-Object.defineProperty(exports, "stringify", ({ enumerable: true, get: function () { return stringify_js_1.default; } }));
-var v1_js_1 = __nccwpck_require__(5597);
-Object.defineProperty(exports, "v1", ({ enumerable: true, get: function () { return v1_js_1.default; } }));
-var v1ToV6_js_1 = __nccwpck_require__(1092);
-Object.defineProperty(exports, "v1ToV6", ({ enumerable: true, get: function () { return v1ToV6_js_1.default; } }));
-var v3_js_1 = __nccwpck_require__(1691);
-Object.defineProperty(exports, "v3", ({ enumerable: true, get: function () { return v3_js_1.default; } }));
-var v4_js_1 = __nccwpck_require__(4834);
-Object.defineProperty(exports, "v4", ({ enumerable: true, get: function () { return v4_js_1.default; } }));
-var v5_js_1 = __nccwpck_require__(2465);
-Object.defineProperty(exports, "v5", ({ enumerable: true, get: function () { return v5_js_1.default; } }));
-var v6_js_1 = __nccwpck_require__(9544);
-Object.defineProperty(exports, "v6", ({ enumerable: true, get: function () { return v6_js_1.default; } }));
-var v6ToV1_js_1 = __nccwpck_require__(2104);
-Object.defineProperty(exports, "v6ToV1", ({ enumerable: true, get: function () { return v6ToV1_js_1.default; } }));
-var v7_js_1 = __nccwpck_require__(1631);
-Object.defineProperty(exports, "v7", ({ enumerable: true, get: function () { return v7_js_1.default; } }));
-var validate_js_1 = __nccwpck_require__(5182);
-Object.defineProperty(exports, "validate", ({ enumerable: true, get: function () { return validate_js_1.default; } }));
-var version_js_1 = __nccwpck_require__(302);
-Object.defineProperty(exports, "version", ({ enumerable: true, get: function () { return version_js_1.default; } }));
-
-
-/***/ }),
-
-/***/ 1576:
-/***/ ((__unused_webpack_module, exports) => {
-
-"use strict";
-
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports["default"] = 'ffffffff-ffff-ffff-ffff-ffffffffffff';
-
-
-/***/ }),
-
-/***/ 6934:
-/***/ ((__unused_webpack_module, exports, __nccwpck_require__) => {
-
-"use strict";
-
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-const crypto_1 = __nccwpck_require__(6982);
-function md5(bytes) {
-    if (Array.isArray(bytes)) {
-        bytes = Buffer.from(bytes);
-    }
-    else if (typeof bytes === 'string') {
-        bytes = Buffer.from(bytes, 'utf8');
-    }
-    return (0, crypto_1.createHash)('md5').update(bytes).digest();
-}
-exports["default"] = md5;
-
-
-/***/ }),
-
-/***/ 5831:
-/***/ ((__unused_webpack_module, exports, __nccwpck_require__) => {
-
-"use strict";
-
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-const crypto_1 = __nccwpck_require__(6982);
-exports["default"] = { randomUUID: crypto_1.randomUUID };
-
-
-/***/ }),
-
-/***/ 805:
-/***/ ((__unused_webpack_module, exports) => {
-
-"use strict";
-
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports["default"] = '00000000-0000-0000-0000-000000000000';
-
-
-/***/ }),
-
-/***/ 2713:
-/***/ ((__unused_webpack_module, exports, __nccwpck_require__) => {
-
-"use strict";
-
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-const validate_js_1 = __nccwpck_require__(5182);
-function parse(uuid) {
-    if (!(0, validate_js_1.default)(uuid)) {
-        throw TypeError('Invalid UUID');
-    }
-    let v;
-    return Uint8Array.of((v = parseInt(uuid.slice(0, 8), 16)) >>> 24, (v >>> 16) & 0xff, (v >>> 8) & 0xff, v & 0xff, (v = parseInt(uuid.slice(9, 13), 16)) >>> 8, v & 0xff, (v = parseInt(uuid.slice(14, 18), 16)) >>> 8, v & 0xff, (v = parseInt(uuid.slice(19, 23), 16)) >>> 8, v & 0xff, ((v = parseInt(uuid.slice(24, 36), 16)) / 0x10000000000) & 0xff, (v / 0x100000000) & 0xff, (v >>> 24) & 0xff, (v >>> 16) & 0xff, (v >>> 8) & 0xff, v & 0xff);
-}
-exports["default"] = parse;
-
-
-/***/ }),
-
-/***/ 9997:
-/***/ ((__unused_webpack_module, exports) => {
-
-"use strict";
-
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports["default"] = /^(?:[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$/i;
-
-
-/***/ }),
-
-/***/ 5983:
-/***/ ((__unused_webpack_module, exports, __nccwpck_require__) => {
-
-"use strict";
-
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-const crypto_1 = __nccwpck_require__(6982);
-const rnds8Pool = new Uint8Array(256);
-let poolPtr = rnds8Pool.length;
-function rng() {
-    if (poolPtr > rnds8Pool.length - 16) {
-        (0, crypto_1.randomFillSync)(rnds8Pool);
-        poolPtr = 0;
-    }
-    return rnds8Pool.slice(poolPtr, (poolPtr += 16));
-}
-exports["default"] = rng;
-
-
-/***/ }),
-
-/***/ 2449:
-/***/ ((__unused_webpack_module, exports, __nccwpck_require__) => {
-
-"use strict";
-
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-const crypto_1 = __nccwpck_require__(6982);
-function sha1(bytes) {
-    if (Array.isArray(bytes)) {
-        bytes = Buffer.from(bytes);
-    }
-    else if (typeof bytes === 'string') {
-        bytes = Buffer.from(bytes, 'utf8');
-    }
-    return (0, crypto_1.createHash)('sha1').update(bytes).digest();
-}
-exports["default"] = sha1;
-
-
-/***/ }),
-
-/***/ 9687:
-/***/ ((__unused_webpack_module, exports, __nccwpck_require__) => {
-
-"use strict";
-
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.unsafeStringify = void 0;
-const validate_js_1 = __nccwpck_require__(5182);
-const byteToHex = [];
-for (let i = 0; i < 256; ++i) {
-    byteToHex.push((i + 0x100).toString(16).slice(1));
-}
-function unsafeStringify(arr, offset = 0) {
-    return (byteToHex[arr[offset + 0]] +
-        byteToHex[arr[offset + 1]] +
-        byteToHex[arr[offset + 2]] +
-        byteToHex[arr[offset + 3]] +
-        '-' +
-        byteToHex[arr[offset + 4]] +
-        byteToHex[arr[offset + 5]] +
-        '-' +
-        byteToHex[arr[offset + 6]] +
-        byteToHex[arr[offset + 7]] +
-        '-' +
-        byteToHex[arr[offset + 8]] +
-        byteToHex[arr[offset + 9]] +
-        '-' +
-        byteToHex[arr[offset + 10]] +
-        byteToHex[arr[offset + 11]] +
-        byteToHex[arr[offset + 12]] +
-        byteToHex[arr[offset + 13]] +
-        byteToHex[arr[offset + 14]] +
-        byteToHex[arr[offset + 15]]).toLowerCase();
-}
-exports.unsafeStringify = unsafeStringify;
-function stringify(arr, offset = 0) {
-    const uuid = unsafeStringify(arr, offset);
-    if (!(0, validate_js_1.default)(uuid)) {
-        throw TypeError('Stringified UUID is invalid');
-    }
-    return uuid;
-}
-exports["default"] = stringify;
-
-
-/***/ }),
-
-/***/ 5597:
-/***/ ((__unused_webpack_module, exports, __nccwpck_require__) => {
-
-"use strict";
-
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.updateV1State = void 0;
-const rng_js_1 = __nccwpck_require__(5983);
-const stringify_js_1 = __nccwpck_require__(9687);
-const _state = {};
-function v1(options, buf, offset) {
-    let bytes;
-    const isV6 = options?._v6 ?? false;
-    if (options) {
-        const optionsKeys = Object.keys(options);
-        if (optionsKeys.length === 1 && optionsKeys[0] === '_v6') {
-            options = undefined;
-        }
-    }
-    if (options) {
-        bytes = v1Bytes(options.random ?? options.rng?.() ?? (0, rng_js_1.default)(), options.msecs, options.nsecs, options.clockseq, options.node, buf, offset);
-    }
-    else {
-        const now = Date.now();
-        const rnds = (0, rng_js_1.default)();
-        updateV1State(_state, now, rnds);
-        bytes = v1Bytes(rnds, _state.msecs, _state.nsecs, isV6 ? undefined : _state.clockseq, isV6 ? undefined : _state.node, buf, offset);
-    }
-    return buf ?? (0, stringify_js_1.unsafeStringify)(bytes);
-}
-function updateV1State(state, now, rnds) {
-    state.msecs ??= -Infinity;
-    state.nsecs ??= 0;
-    if (now === state.msecs) {
-        state.nsecs++;
-        if (state.nsecs >= 10000) {
-            state.node = undefined;
-            state.nsecs = 0;
-        }
-    }
-    else if (now > state.msecs) {
-        state.nsecs = 0;
-    }
-    else if (now < state.msecs) {
-        state.node = undefined;
-    }
-    if (!state.node) {
-        state.node = rnds.slice(10, 16);
-        state.node[0] |= 0x01;
-        state.clockseq = ((rnds[8] << 8) | rnds[9]) & 0x3fff;
-    }
-    state.msecs = now;
-    return state;
-}
-exports.updateV1State = updateV1State;
-function v1Bytes(rnds, msecs, nsecs, clockseq, node, buf, offset = 0) {
-    if (rnds.length < 16) {
-        throw new Error('Random bytes length must be >= 16');
-    }
-    if (!buf) {
-        buf = new Uint8Array(16);
-        offset = 0;
-    }
-    else {
-        if (offset < 0 || offset + 16 > buf.length) {
-            throw new RangeError(`UUID byte range ${offset}:${offset + 15} is out of buffer bounds`);
-        }
-    }
-    msecs ??= Date.now();
-    nsecs ??= 0;
-    clockseq ??= ((rnds[8] << 8) | rnds[9]) & 0x3fff;
-    node ??= rnds.slice(10, 16);
-    msecs += 12219292800000;
-    const tl = ((msecs & 0xfffffff) * 10000 + nsecs) % 0x100000000;
-    buf[offset++] = (tl >>> 24) & 0xff;
-    buf[offset++] = (tl >>> 16) & 0xff;
-    buf[offset++] = (tl >>> 8) & 0xff;
-    buf[offset++] = tl & 0xff;
-    const tmh = ((msecs / 0x100000000) * 10000) & 0xfffffff;
-    buf[offset++] = (tmh >>> 8) & 0xff;
-    buf[offset++] = tmh & 0xff;
-    buf[offset++] = ((tmh >>> 24) & 0xf) | 0x10;
-    buf[offset++] = (tmh >>> 16) & 0xff;
-    buf[offset++] = (clockseq >>> 8) | 0x80;
-    buf[offset++] = clockseq & 0xff;
-    for (let n = 0; n < 6; ++n) {
-        buf[offset++] = node[n];
-    }
-    return buf;
-}
-exports["default"] = v1;
-
-
-/***/ }),
-
-/***/ 1092:
-/***/ ((__unused_webpack_module, exports, __nccwpck_require__) => {
-
-"use strict";
-
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-const parse_js_1 = __nccwpck_require__(2713);
-const stringify_js_1 = __nccwpck_require__(9687);
-function v1ToV6(uuid) {
-    const v1Bytes = typeof uuid === 'string' ? (0, parse_js_1.default)(uuid) : uuid;
-    const v6Bytes = _v1ToV6(v1Bytes);
-    return typeof uuid === 'string' ? (0, stringify_js_1.unsafeStringify)(v6Bytes) : v6Bytes;
-}
-exports["default"] = v1ToV6;
-function _v1ToV6(v1Bytes) {
-    return Uint8Array.of(((v1Bytes[6] & 0x0f) << 4) | ((v1Bytes[7] >> 4) & 0x0f), ((v1Bytes[7] & 0x0f) << 4) | ((v1Bytes[4] & 0xf0) >> 4), ((v1Bytes[4] & 0x0f) << 4) | ((v1Bytes[5] & 0xf0) >> 4), ((v1Bytes[5] & 0x0f) << 4) | ((v1Bytes[0] & 0xf0) >> 4), ((v1Bytes[0] & 0x0f) << 4) | ((v1Bytes[1] & 0xf0) >> 4), ((v1Bytes[1] & 0x0f) << 4) | ((v1Bytes[2] & 0xf0) >> 4), 0x60 | (v1Bytes[2] & 0x0f), v1Bytes[3], v1Bytes[8], v1Bytes[9], v1Bytes[10], v1Bytes[11], v1Bytes[12], v1Bytes[13], v1Bytes[14], v1Bytes[15]);
-}
-
-
-/***/ }),
-
-/***/ 1691:
-/***/ ((__unused_webpack_module, exports, __nccwpck_require__) => {
-
-"use strict";
-
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.URL = exports.DNS = void 0;
-const md5_js_1 = __nccwpck_require__(6934);
-const v35_js_1 = __nccwpck_require__(1352);
-var v35_js_2 = __nccwpck_require__(1352);
-Object.defineProperty(exports, "DNS", ({ enumerable: true, get: function () { return v35_js_2.DNS; } }));
-Object.defineProperty(exports, "URL", ({ enumerable: true, get: function () { return v35_js_2.URL; } }));
-function v3(value, namespace, buf, offset) {
-    return (0, v35_js_1.default)(0x30, md5_js_1.default, value, namespace, buf, offset);
-}
-v3.DNS = v35_js_1.DNS;
-v3.URL = v35_js_1.URL;
-exports["default"] = v3;
-
-
-/***/ }),
-
-/***/ 1352:
-/***/ ((__unused_webpack_module, exports, __nccwpck_require__) => {
-
-"use strict";
-
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.URL = exports.DNS = exports.stringToBytes = void 0;
-const parse_js_1 = __nccwpck_require__(2713);
-const stringify_js_1 = __nccwpck_require__(9687);
-function stringToBytes(str) {
-    str = unescape(encodeURIComponent(str));
-    const bytes = new Uint8Array(str.length);
-    for (let i = 0; i < str.length; ++i) {
-        bytes[i] = str.charCodeAt(i);
-    }
-    return bytes;
-}
-exports.stringToBytes = stringToBytes;
-exports.DNS = '6ba7b810-9dad-11d1-80b4-00c04fd430c8';
-exports.URL = '6ba7b811-9dad-11d1-80b4-00c04fd430c8';
-function v35(version, hash, value, namespace, buf, offset) {
-    const valueBytes = typeof value === 'string' ? stringToBytes(value) : value;
-    const namespaceBytes = typeof namespace === 'string' ? (0, parse_js_1.default)(namespace) : namespace;
-    if (typeof namespace === 'string') {
-        namespace = (0, parse_js_1.default)(namespace);
-    }
-    if (namespace?.length !== 16) {
-        throw TypeError('Namespace must be array-like (16 iterable integer values, 0-255)');
-    }
-    let bytes = new Uint8Array(16 + valueBytes.length);
-    bytes.set(namespaceBytes);
-    bytes.set(valueBytes, namespaceBytes.length);
-    bytes = hash(bytes);
-    bytes[6] = (bytes[6] & 0x0f) | version;
-    bytes[8] = (bytes[8] & 0x3f) | 0x80;
-    if (buf) {
-        offset = offset || 0;
-        for (let i = 0; i < 16; ++i) {
-            buf[offset + i] = bytes[i];
-        }
-        return buf;
-    }
-    return (0, stringify_js_1.unsafeStringify)(bytes);
-}
-exports["default"] = v35;
-
-
-/***/ }),
-
-/***/ 4834:
-/***/ ((__unused_webpack_module, exports, __nccwpck_require__) => {
-
-"use strict";
-
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-const native_js_1 = __nccwpck_require__(5831);
-const rng_js_1 = __nccwpck_require__(5983);
-const stringify_js_1 = __nccwpck_require__(9687);
-function v4(options, buf, offset) {
-    if (native_js_1.default.randomUUID && !buf && !options) {
-        return native_js_1.default.randomUUID();
-    }
-    options = options || {};
-    const rnds = options.random ?? options.rng?.() ?? (0, rng_js_1.default)();
-    if (rnds.length < 16) {
-        throw new Error('Random bytes length must be >= 16');
-    }
-    rnds[6] = (rnds[6] & 0x0f) | 0x40;
-    rnds[8] = (rnds[8] & 0x3f) | 0x80;
-    if (buf) {
-        offset = offset || 0;
-        if (offset < 0 || offset + 16 > buf.length) {
-            throw new RangeError(`UUID byte range ${offset}:${offset + 15} is out of buffer bounds`);
-        }
-        for (let i = 0; i < 16; ++i) {
-            buf[offset + i] = rnds[i];
-        }
-        return buf;
-    }
-    return (0, stringify_js_1.unsafeStringify)(rnds);
-}
-exports["default"] = v4;
-
-
-/***/ }),
-
-/***/ 2465:
-/***/ ((__unused_webpack_module, exports, __nccwpck_require__) => {
-
-"use strict";
-
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.URL = exports.DNS = void 0;
-const sha1_js_1 = __nccwpck_require__(2449);
-const v35_js_1 = __nccwpck_require__(1352);
-var v35_js_2 = __nccwpck_require__(1352);
-Object.defineProperty(exports, "DNS", ({ enumerable: true, get: function () { return v35_js_2.DNS; } }));
-Object.defineProperty(exports, "URL", ({ enumerable: true, get: function () { return v35_js_2.URL; } }));
-function v5(value, namespace, buf, offset) {
-    return (0, v35_js_1.default)(0x50, sha1_js_1.default, value, namespace, buf, offset);
-}
-v5.DNS = v35_js_1.DNS;
-v5.URL = v35_js_1.URL;
-exports["default"] = v5;
-
-
-/***/ }),
-
-/***/ 9544:
-/***/ ((__unused_webpack_module, exports, __nccwpck_require__) => {
-
-"use strict";
-
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-const stringify_js_1 = __nccwpck_require__(9687);
-const v1_js_1 = __nccwpck_require__(5597);
-const v1ToV6_js_1 = __nccwpck_require__(1092);
-function v6(options, buf, offset) {
-    options ??= {};
-    offset ??= 0;
-    let bytes = (0, v1_js_1.default)({ ...options, _v6: true }, new Uint8Array(16));
-    bytes = (0, v1ToV6_js_1.default)(bytes);
-    if (buf) {
-        for (let i = 0; i < 16; i++) {
-            buf[offset + i] = bytes[i];
-        }
-        return buf;
-    }
-    return (0, stringify_js_1.unsafeStringify)(bytes);
-}
-exports["default"] = v6;
-
-
-/***/ }),
-
-/***/ 2104:
-/***/ ((__unused_webpack_module, exports, __nccwpck_require__) => {
-
-"use strict";
-
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-const parse_js_1 = __nccwpck_require__(2713);
-const stringify_js_1 = __nccwpck_require__(9687);
-function v6ToV1(uuid) {
-    const v6Bytes = typeof uuid === 'string' ? (0, parse_js_1.default)(uuid) : uuid;
-    const v1Bytes = _v6ToV1(v6Bytes);
-    return typeof uuid === 'string' ? (0, stringify_js_1.unsafeStringify)(v1Bytes) : v1Bytes;
-}
-exports["default"] = v6ToV1;
-function _v6ToV1(v6Bytes) {
-    return Uint8Array.of(((v6Bytes[3] & 0x0f) << 4) | ((v6Bytes[4] >> 4) & 0x0f), ((v6Bytes[4] & 0x0f) << 4) | ((v6Bytes[5] & 0xf0) >> 4), ((v6Bytes[5] & 0x0f) << 4) | (v6Bytes[6] & 0x0f), v6Bytes[7], ((v6Bytes[1] & 0x0f) << 4) | ((v6Bytes[2] & 0xf0) >> 4), ((v6Bytes[2] & 0x0f) << 4) | ((v6Bytes[3] & 0xf0) >> 4), 0x10 | ((v6Bytes[0] & 0xf0) >> 4), ((v6Bytes[0] & 0x0f) << 4) | ((v6Bytes[1] & 0xf0) >> 4), v6Bytes[8], v6Bytes[9], v6Bytes[10], v6Bytes[11], v6Bytes[12], v6Bytes[13], v6Bytes[14], v6Bytes[15]);
-}
-
-
-/***/ }),
-
-/***/ 1631:
-/***/ ((__unused_webpack_module, exports, __nccwpck_require__) => {
-
-"use strict";
-
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.updateV7State = void 0;
-const rng_js_1 = __nccwpck_require__(5983);
-const stringify_js_1 = __nccwpck_require__(9687);
-const _state = {};
-function v7(options, buf, offset) {
-    let bytes;
-    if (options) {
-        bytes = v7Bytes(options.random ?? options.rng?.() ?? (0, rng_js_1.default)(), options.msecs, options.seq, buf, offset);
-    }
-    else {
-        const now = Date.now();
-        const rnds = (0, rng_js_1.default)();
-        updateV7State(_state, now, rnds);
-        bytes = v7Bytes(rnds, _state.msecs, _state.seq, buf, offset);
-    }
-    return buf ?? (0, stringify_js_1.unsafeStringify)(bytes);
-}
-function updateV7State(state, now, rnds) {
-    state.msecs ??= -Infinity;
-    state.seq ??= 0;
-    if (now > state.msecs) {
-        state.seq = (rnds[6] << 23) | (rnds[7] << 16) | (rnds[8] << 8) | rnds[9];
-        state.msecs = now;
-    }
-    else {
-        state.seq = (state.seq + 1) | 0;
-        if (state.seq === 0) {
-            state.msecs++;
-        }
-    }
-    return state;
-}
-exports.updateV7State = updateV7State;
-function v7Bytes(rnds, msecs, seq, buf, offset = 0) {
-    if (rnds.length < 16) {
-        throw new Error('Random bytes length must be >= 16');
-    }
-    if (!buf) {
-        buf = new Uint8Array(16);
-        offset = 0;
-    }
-    else {
-        if (offset < 0 || offset + 16 > buf.length) {
-            throw new RangeError(`UUID byte range ${offset}:${offset + 15} is out of buffer bounds`);
-        }
-    }
-    msecs ??= Date.now();
-    seq ??= ((rnds[6] * 0x7f) << 24) | (rnds[7] << 16) | (rnds[8] << 8) | rnds[9];
-    buf[offset++] = (msecs / 0x10000000000) & 0xff;
-    buf[offset++] = (msecs / 0x100000000) & 0xff;
-    buf[offset++] = (msecs / 0x1000000) & 0xff;
-    buf[offset++] = (msecs / 0x10000) & 0xff;
-    buf[offset++] = (msecs / 0x100) & 0xff;
-    buf[offset++] = msecs & 0xff;
-    buf[offset++] = 0x70 | ((seq >>> 28) & 0x0f);
-    buf[offset++] = (seq >>> 20) & 0xff;
-    buf[offset++] = 0x80 | ((seq >>> 14) & 0x3f);
-    buf[offset++] = (seq >>> 6) & 0xff;
-    buf[offset++] = ((seq << 2) & 0xff) | (rnds[10] & 0x03);
-    buf[offset++] = rnds[11];
-    buf[offset++] = rnds[12];
-    buf[offset++] = rnds[13];
-    buf[offset++] = rnds[14];
-    buf[offset++] = rnds[15];
-    return buf;
-}
-exports["default"] = v7;
-
-
-/***/ }),
-
-/***/ 5182:
-/***/ ((__unused_webpack_module, exports, __nccwpck_require__) => {
-
-"use strict";
-
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-const regex_js_1 = __nccwpck_require__(9997);
-function validate(uuid) {
-    return typeof uuid === 'string' && regex_js_1.default.test(uuid);
-}
-exports["default"] = validate;
-
-
-/***/ }),
-
-/***/ 302:
-/***/ ((__unused_webpack_module, exports, __nccwpck_require__) => {
-
-"use strict";
-
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-const validate_js_1 = __nccwpck_require__(5182);
-function version(uuid) {
-    if (!(0, validate_js_1.default)(uuid)) {
-        throw TypeError('Invalid UUID');
-    }
-    return parseInt(uuid.slice(14, 15), 16);
-}
-exports["default"] = version;
-
-
-/***/ }),
-
 /***/ 614:
 /***/ ((module) => {
 
 "use strict";
-module.exports = /*#__PURE__*/JSON.parse('{"name":"azure-pipelines-tool-lib","version":"2.0.8","description":"Azure Pipelines Tool Installer Lib for CI/CD Tasks","main":"tool.js","scripts":{"build":"node make.js build","test":"node make.js test","sample":"node make.js sample","units":"node make.js units"},"repository":{"type":"git","url":"git+https://github.com/microsoft/azure-pipelines-tool-lib.git"},"keywords":["VSTS"],"author":"Microsoft","license":"MIT","bugs":{"url":"https://github.com/microsoft/azure-pipelines-tool-lib/issues"},"homepage":"https://github.com/microsoft/azure-pipelines-tool-lib#readme","dependencies":{"@types/semver":"^5.3.0","@types/uuid":"^3.4.5","azure-pipelines-task-lib":"^4.1.0","semver":"^5.7.0","semver-compare":"^1.0.0","typed-rest-client":"^1.8.6","uuid":"^3.3.2"},"devDependencies":{"@types/mocha":"^5.2.7","@types/node":"^16.11.39","@types/shelljs":"^0.8.4","@types/xml2js":"^0.4.5","mocha":"^6.2.3","nock":"13.0.4","shelljs":"^0.8.5","typescript":"^4.0.5","xml2js":"^0.4.23"}}');
+module.exports = /*#__PURE__*/JSON.parse('{"name":"azure-pipelines-tool-lib","version":"2.0.10","description":"Azure Pipelines Tool Installer Lib for CI/CD Tasks","main":"tool.js","scripts":{"build":"node make.js build","test":"node make.js test","sample":"node make.js sample","units":"node make.js units"},"repository":{"type":"git","url":"git+https://github.com/microsoft/azure-pipelines-tool-lib.git"},"keywords":["VSTS"],"author":"Microsoft","license":"MIT","bugs":{"url":"https://github.com/microsoft/azure-pipelines-tool-lib/issues"},"homepage":"https://github.com/microsoft/azure-pipelines-tool-lib#readme","dependencies":{"@types/semver":"^5.3.0","@types/uuid":"^3.4.5","azure-pipelines-task-lib":"^4.1.0","semver":"^5.7.0","semver-compare":"^1.0.0","typed-rest-client":"^1.8.6","uuid":"^3.3.2"},"devDependencies":{"@types/mocha":"^5.2.7","@types/node":"^16.11.39","@types/shelljs":"^0.8.4","@types/xml2js":"^0.4.5","mocha":"^6.2.3","nock":"13.0.4","shelljs":"^0.8.5","typescript":"^4.0.5","xml2js":"^0.4.23"}}');
 
 /***/ })
 
