@@ -119,7 +119,6 @@ extends:
               RUNNER_TEMP: $(Agent.TempDirectory)
     - ${{ if eq(parameters['DoEsrp'], 'true') }}:
       - stage: PublishToMarketplace
-        dependsOn: BuildAndTest
         trigger: manual
         jobs:
         - job: PublishToMarketplaceJob
