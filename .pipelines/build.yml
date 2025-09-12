@@ -123,18 +123,23 @@ extends:
         jobs:
         - job: PublishToMarketplaceJob
           displayName: Publish to Marketplace
+          pool:
+            name: Azure-Pipelines-1ESPT-ExDShared
+            image: ubuntu-latest
+            os: linux
           steps:
             - download: current
               displayName: Download Signed Artifact
               artifact: vsix
-            - task: AzureCLI@2
-              displayName: 'Get AzDO User ID'
+            - task: NodeTool@0
+              displayName: 'Install Node.js 20.x'
               inputs:
-                azureSubscription: $(SigningServiceName)
-                scriptType: pscore
-                scriptLocation: inlineScript
-                inlineScript: |
-                  az rest -u https://app.vssps.visualstudio.com/_apis/profile/profiles/me --resource 499b84ac-1321-427f-aa17-267ca6975798
+                versionSpec: '20.x'
+            - task: TfxInstaller@5
+              displayName: 'Install TFX CLI'
+              inputs:
+                version: '0.*'
+                checkLatest: true
             - task: 1ES.PublishAzureDevOpsExtension@1
               displayName: 'Publish the production extension to the Marketplace'
               inputs:
